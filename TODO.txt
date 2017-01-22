@@ -1,0 +1,15 @@
+- Fix problems with paddles freezing when lifting keys but still pressing down the other one 
+- Reorganize/rename files to be more appropriate 
+- Implement ball (random start velocity?) 
+- Implement "start button" to start the ball off 
+- Implement different angles of ball reflection for different parts of the paddle 
+- Implement scoring for the players 
+- Start menu with options (ball speed option) 
+- AI opponent 
+- Powerups 
+  - long paddle
+  - spawn multiple balls 
+  - sticky paddle 
+  - faster movement 
+  - slower/faster ball movement 
+- Paddle wrapping screen  
