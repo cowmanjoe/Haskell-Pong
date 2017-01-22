@@ -13,7 +13,7 @@ main = do
 	(_progName, _args) <- getArgsAndInitialize
 	_window <- createWindow "Game" 
 	
-	reshapeCallback $= Just reshape
+	--reshapeCallback $= Just reshape
 
 	gameState <- newIORef makeGameObjects
 
@@ -22,6 +22,6 @@ main = do
 	keyboardMouseCallback $= Just (keyboardMouse gameState)
 	
 
-	idleCallback $= Just (idle gameState)
+	addTimerCallback 30 (update gameState)
 	mainLoop 
 

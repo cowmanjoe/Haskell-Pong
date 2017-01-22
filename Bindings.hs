@@ -1,4 +1,4 @@
-module Bindings (display, idle, reshape, keyboardMouse, makeGameObjects) where 
+module Bindings (display, update, reshape, keyboardMouse, makeGameObjects) where 
 
 import Graphics.UI.GLUT
 import Data.IORef
@@ -12,24 +12,25 @@ reshape :: ReshapeCallback
 reshape size = do 
   viewport $= (Position 0 0, size) 
 
-{-
+
 keyboardMouse :: IORef GameState -> KeyboardMouseCallback
 keyboardMouse gameState _key _state _modifiers _position 
   | _key == Char 's' = do 
     gameState $~! (paddleCommand (if _state == Down then DDown else DNone) PLeft)
-  | _key == Char 'a' = do
+  | _key == Char 'w' = do
     gameState $~! (paddleCommand (if _state == Down then DUp else DNone) PLeft)
   | _key == SpecialKey KeyDown = do 
     gameState $~! (paddleCommand (if _state == Down then DDown else DNone) PRight) 
   | _key == SpecialKey KeyUp = do
     gameState $~! (paddleCommand (if _state == Down then DUp else DNone) PRight) 
   | otherwise = return ()
--}
 
+{-
 keyboardMouse :: IORef GameState -> KeyboardMouseCallback
 keyboardMouse gameState (Char 's') _state _ _ = do 
   gameState $~! (paddleCommand (if _state == Down then DDown else DNone) PLeft)
 keyboardMouse _ _ _ _ _ = return ()
+-}
 
 makeGameObjects :: GameState
 makeGameObjects = GameState [myPaddle PLeft 0.0, myPaddle PRight 0.0] (DNone, DNone)

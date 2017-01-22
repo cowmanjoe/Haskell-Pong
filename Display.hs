@@ -7,6 +7,8 @@ import Control.Monad
 import Games2
 
 
+-- Types --
+
 -- Either Movement up or down 
 data MoveDirection = DNone | DUp | DDown
 
@@ -25,9 +27,13 @@ data GameState = GameState { gameObjects :: [GameObject], moveDirections :: Move
 type GameAction = Action MoveDirection 
 
 
-paddleSpeed = 0.0001
+-- Constants -- 
+
+paddleSpeed = 0.05
 upVertex = Vertex3 0 paddleSpeed 0
 downVertex = Vertex3 0 (-paddleSpeed) 0
+
+
 
 display :: IORef GameState -> DisplayCallback
 display gameState = do
@@ -37,11 +43,12 @@ display gameState = do
   forM_ (gameObjects gs) drawObject
   flush
  
-idle :: IORef GameState -> IdleCallback
-idle gameState = do
+update :: IORef GameState -> TimerCallback
+update gameState = do
   gs <- get gameState 
-  gameState $~! update
+  gameState $~! updateMovement
   postRedisplay Nothing
+  addTimerCallback 30 (update gameState)
 
 
 drawObject :: GameObject -> IO () 
@@ -54,9 +61,9 @@ drawObject (Paddle
 drawObject (Ball _ _ _)  = error("Ball is not yet implemented in drawObject")
 
 
--- this will move the ball in its velocity direction
-update :: GameState -> GameState
-update (GameState (leftPaddle:rightPaddle:xs) (dirLeft, dirRight)) = 
+-- this will move the paddles in their velocity direction
+updateMovement :: GameState -> GameState
+updateMovement (GameState (leftPaddle:rightPaddle:xs) (dirLeft, dirRight)) = 
     GameState [movePaddle leftPaddle dirLeft, movePaddle rightPaddle dirRight] (dirLeft, dirRight)
 
 
