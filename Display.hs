@@ -10,7 +10,7 @@ import Games2
 -- Types --
 
 -- Either Movement up or down 
-data MoveDirection = DNone | DUp | DDown
+data MoveDirection = DNone | DUp | DDown deriving (Eq)
 
 -- Type for (leftPaddle, rightPaddle) of vertical paddle movement 
 type MoveDirections = (MoveDirection, MoveDirection)
@@ -26,6 +26,9 @@ data GameState = GameState { gameObjects :: [GameObject], moveDirections :: Move
 -- A GameAction has a move type of MoveDirection, a state type of 
 type GameAction = Action MoveDirection 
 
+
+-- Paddle sides 
+data Side = PLeft | PRight
 
 -- Constants -- 
 
@@ -77,3 +80,8 @@ movePaddle p DNone = p
 
 add :: (Vertex3 GLfloat) -> (Vertex3 GLfloat) -> (Vertex3 GLfloat) 
 add (Vertex3 a b c) (Vertex3 d e f) = Vertex3 (a+d) (b+e) (c+f)
+
+
+getMoveDirection :: Side -> GameState -> MoveDirection 
+getMoveDirection PLeft = fst . moveDirections 
+getMoveDirection PRight = snd . moveDirections 
