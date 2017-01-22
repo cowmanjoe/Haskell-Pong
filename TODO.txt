@@ -12,4 +12,4 @@
   - sticky paddle 
   - faster movement 
   - slower/faster ball movement 
-- Paddle wrapping screen 
+- Paddle wrapping screen  
