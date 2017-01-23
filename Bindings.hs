@@ -1,56 +1,56 @@
-module Bindings (display, update, reshape, keyboardMouse, makeGameObjects) where 
+module Bindings (
+	makeGameObjects, 
+	paddleCommand, 
+	Side(PLeft, PRight), 
+	MoveDirection(DNone, DUp, DDown), 
+	MoveDirections,
+	GameState(GameState), 
+	GameObject(Ball,Paddle) , 
+	paddleSpeed,
+	upVertex,
+	downVertex, 
+	gameObjects, 
+	moveDirections) where 
 
 import Graphics.UI.GLUT
 import Data.IORef
-import Display 
+--import Display 
 import Games2
+import GHC.Float
+
+-- Types --
+
+-- Either Movement up or down 
+data MoveDirection = DNone | DUp | DDown deriving (Eq)
+
+-- Type for (leftPaddle, rightPaddle) of vertical paddle movement 
+type MoveDirections = (MoveDirection, MoveDirection)
+
+-- GameObjects are either Ball position velocity radius or Paddle corner1 corner2 corner3 corner4
+data GameObject = Ball (Vertex3 GLfloat) (Vertex3 GLfloat) GLfloat | 
+    Paddle (Vertex3 GLfloat) (Vertex3 GLfloat) (Vertex3 GLfloat) (Vertex3 GLfloat)
+
+-- GameState is a list of game objects and movement of paddle controls 
+data GameState = GameState { gameObjects :: [GameObject], moveDirections :: MoveDirections }
 
 
+-- A GameAction has a move type of MoveDirection, a state type of 
+type GameAction = Action MoveDirection 
 
 
-reshape :: ReshapeCallback 
-reshape size = do 
-  viewport $= (Position 0 0, size) 
+-- Paddle sides 
+data Side = PLeft | PRight
+
+-- Constants -- 
+
+paddleSpeed = double2Float 0.05
+
+upVertex = Vertex3 0 paddleSpeed 0
+
+downVertex = Vertex3 0 (-paddleSpeed) 0
+ 
 
 
-keyboardMouse :: IORef GameState -> KeyboardMouseCallback
-keyboardMouse gameState _key _state _modifiers _position 
-  | _key == Char 's' = do 
-    gs <- get gameState
-    gameState $~! (paddleCommand 
-		(if _state == Down 
-		then DDown 
-		else (if getMoveDirection PLeft gs /= DUp then DNone else DUp))
-		PLeft)
-  | _key == Char 'w' = do
-    gs <- get gameState
-    gameState $~! (paddleCommand 
-	    (if _state == Down 
-		then DUp 
-		else (if getMoveDirection PLeft gs /= DDown then DNone else DDown)) 
-		PLeft)
-  | _key == SpecialKey KeyDown = do 
-    gs <- get gameState
-    gameState $~! (paddleCommand 
-		(if _state == Down 
-		then DDown 
-		else (if getMoveDirection PRight gs /= DUp then DNone else DUp)) 
-		PRight) 
-  | _key == SpecialKey KeyUp = do
-    gs <- get gameState
-    gameState $~! (paddleCommand 
-	    (if _state == Down 
-		then DUp 
-		else (if getMoveDirection PRight gs /= DDown then DNone else DDown))  
-		PRight) 
-  | otherwise = return ()
-
-{-
-keyboardMouse :: IORef GameState -> KeyboardMouseCallback
-keyboardMouse gameState (Char 's') _state _ _ = do 
-  gameState $~! (paddleCommand (if _state == Down then DDown else DNone) PLeft)
-keyboardMouse _ _ _ _ _ = return ()
--}
 
 makeGameObjects :: GameState
 makeGameObjects = GameState [myPaddle PLeft 0.0, myPaddle PRight 0.0] (DNone, DNone)

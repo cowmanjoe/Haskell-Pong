@@ -1,41 +1,20 @@
-module Display  where 
+module Display(
+    display, 
+	reshape, 
+	update, 
+	makeGameObjects, 
+	getMoveDirection, 
+	GameState(GameState), 
+	Side(PLeft,PRight), 
+	MoveDirection(DUp, DDown, DNone), 
+	paddleCommand)  where 
 
 import Graphics.UI.GLUT
 import Data.IORef
 import Data.Time
 import Control.Monad
 import Games2
-
-
--- Types --
-
--- Either Movement up or down 
-data MoveDirection = DNone | DUp | DDown deriving (Eq)
-
--- Type for (leftPaddle, rightPaddle) of vertical paddle movement 
-type MoveDirections = (MoveDirection, MoveDirection)
-
--- GameObjects are either Ball position velocity radius or Paddle corner1 corner2 corner3 corner4
-data GameObject = Ball (Vertex3 GLfloat) (Vertex3 GLfloat) GLfloat | 
-    Paddle (Vertex3 GLfloat) (Vertex3 GLfloat) (Vertex3 GLfloat) (Vertex3 GLfloat)
-
--- GameState is a list of game objects and movement of paddle controls 
-data GameState = GameState { gameObjects :: [GameObject], moveDirections :: MoveDirections }
-
-
--- A GameAction has a move type of MoveDirection, a state type of 
-type GameAction = Action MoveDirection 
-
-
--- Paddle sides 
-data Side = PLeft | PRight
-
--- Constants -- 
-
-paddleSpeed = 0.05
-upVertex = Vertex3 0 paddleSpeed 0
-downVertex = Vertex3 0 (-paddleSpeed) 0
-
+import Bindings
 
 
 display :: IORef GameState -> DisplayCallback
@@ -45,6 +24,10 @@ display gameState = do
   
   forM_ (gameObjects gs) drawObject
   flush
+ 
+reshape :: ReshapeCallback 
+reshape size = do 
+  viewport $= (Position 0 0, size)
  
 update :: IORef GameState -> TimerCallback
 update gameState = do
@@ -78,7 +61,7 @@ movePaddle (Paddle c1 c2 c3 c4) DDown =
 movePaddle p DNone = p
 
 
-add :: (Vertex3 GLfloat) -> (Vertex3 GLfloat) -> (Vertex3 GLfloat) 
+add :: Num a => (Vertex3 a) -> (Vertex3 a) -> (Vertex3 a) 
 add (Vertex3 a b c) (Vertex3 d e f) = Vertex3 (a+d) (b+e) (c+f)
 
 

@@ -1,10 +1,10 @@
  
 
-import Bindings
+import Display
 import Graphics.Rendering.OpenGL
 import Data.IORef
 import Graphics.UI.GLUT
-
+import Input
 
 
 
